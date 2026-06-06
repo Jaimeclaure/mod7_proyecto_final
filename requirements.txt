@@ -1,0 +1,4 @@
+# Dependencias del proyecto
+fastf1
+pandas
+pyarrow
