@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 """
 Módulo de extracción. Consume la API de football-data.org
 y descarga los datos de Partidos y Posiciones a un directorio temporal.
@@ -100,3 +101,16 @@ def extract_datasets(temp_dir: str = "football_data") -> List[Tuple[str, str]]:
         extracted_files.append(("standings", local_path))
             
     return extracted_files
+=======
+"""Script de extracción (placeholder)."""
+
+from utils import load_parquet
+
+
+def main():
+    print("Ejecutando script de extracción (placeholder)")
+
+
+if __name__ == "__main__":
+    main()
+>>>>>>> 9563ef5d4010832a348e063804599ba667dbf4d3

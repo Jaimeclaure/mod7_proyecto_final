@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 google-cloud-storage==2.10.0
 requests==2.31.0
 pandas
 python-dotenv==1.0.0
+=======
+# Dependencias del proyecto
+fastf1
+pandas
+pyarrow
+>>>>>>> 9563ef5d4010832a348e063804599ba667dbf4d3
