@@ -1,0 +1,17 @@
+.env
+
+# Entornos e intermedios de Python
+__pycache__/
+*.pyc
+venv/
+env/
+
+# Archivos de datos locales (seguridad)
+*.csv
+*.json
+*.env
+*.ipynb
+*.html
+.ipynb_checkpoints/
+CONTEXTO_PROYECTO.md
+CONTEXTO_WIF.md
