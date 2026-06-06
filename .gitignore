@@ -12,5 +12,6 @@ env/
 *.env
 *.ipynb
 *.html
+.ipynb_checkpoints/
 CONTEXTO_PROYECTO.md
 CONTEXTO_WIF.md
