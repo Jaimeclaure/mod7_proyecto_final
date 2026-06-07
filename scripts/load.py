@@ -1,49 +1,81 @@
 """
-Módulo de carga. Orquesta la ejecución: llama a extract.py 
-y sube los archivos resultantes al bucket de Google Cloud Storage.
+Sube los parquet de data/raw/ a GCS.
+
+Estructura en el bucket:
+  {RAW_PREFIX}/{dataset}/{filename}.parquet
+
+Ejemplos:
+  raw/matches/matches_pl.parquet
+  raw/players/players_pl.parquet
+  raw/scorers/scorers_pl.parquet
 """
-import os
-from datetime import datetime
-from utils import get_gcs_client, setup_logger
-from extract import extract_datasets
 
-logger = setup_logger()
+import sys
+from pathlib import Path
 
-def upload_to_gcs(bucket_name: str, source_file_name: str, destination_blob_name: str) -> None:
-    """Sube un archivo local a un bucket de GCS."""
-    try:
-        client = get_gcs_client()
-        bucket = client.bucket(bucket_name)
-        blob = bucket.blob(destination_blob_name)
-        blob.upload_from_filename(source_file_name)
-        logger.info(f"✅ Archivo subido: gs://{bucket_name}/{destination_blob_name}")
-    except Exception as e:
-        logger.error(f"Error al subir el archivo {source_file_name}: {e}")
-        raise
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
 
-def main():
-    # El nombre del bucket debe configurarse en las variables de entorno
-    bucket_name = os.environ.get("GCS_BUCKET_NAME")
-    if not bucket_name:
-        logger.error("La variable GCS_BUCKET_NAME no está definida.")
-        raise ValueError("La variable GCS_BUCKET_NAME no está definida.")
-    
-    logger.info("Iniciando fase de Extracción (Bronze)...")
-    try:
-        files = extract_datasets()
-    except Exception as e:
-        logger.error("La extracción falló. Abortando carga.")
-        return
-    
-    logger.info("Iniciando fase de Carga a GCS (con particionamiento)...")
-    today = datetime.utcnow()
-    partition = f"year={today.year}/month={today.month:02d}/day={today.day:02d}"
+from dotenv import load_dotenv
 
-    for name, local_path in files:
-        dest_path = f"bronze/football_data/{partition}/{name}.csv"
-        upload_to_gcs(bucket_name, local_path, dest_path)
-        
-    logger.info("Pipeline de ingesta finalizado con éxito.")
+from utils import GCS_BUCKET, RAW_DIR, RAW_PREFIX, gcs_client
 
+load_dotenv()
+
+
+################ ARMADO DE RUTA GCS
+# La función _gcs_path genera la ruta destino dentro del bucket, manteniendo la estructura por carpetas.
+def _gcs_path(path: Path) -> str:
+	"""
+	Genera la ruta destino dentro del bucket.
+	Ejemplo:
+	data/raw/matches/matches_pl.parquet →   raw/matches/matches_pl.parquet
+	"""
+
+	relative = path.relative_to(RAW_DIR)
+
+	if len(relative.parts) == 1:
+		return f"{RAW_PREFIX}/consolidated/{path.name}"
+
+	dataset = relative.parts[0]
+
+	return f"{RAW_PREFIX}/{dataset}/{path.name}"
+
+
+################ CARGA A GCS
+# La función upload_raw busca todos los archivos parquet dentro de data/raw/ y los sube a GCS manteniendo la estructura por carpetas.
+def upload_raw() -> None:
+	"""
+	Sube todos los archivos parquet encontrados dentro de data/raw/.
+
+	Mantiene la estructura por carpetas:
+	- matches
+	- players
+	- scorers
+	- standings
+	- teams
+	"""
+
+	parquets = sorted(RAW_DIR.rglob("*.parquet"))
+
+	if not parquets:
+		print("No hay archivos parquet en data/raw/")
+		return
+
+	client = gcs_client()
+	bucket = client.bucket(GCS_BUCKET)
+
+	for path in parquets:
+		gcs_path = _gcs_path(path)
+
+		blob = bucket.blob(gcs_path)
+		blob.upload_from_filename(str(path))
+
+		print(f"  subido: gs://{GCS_BUCKET}/{gcs_path}")
+
+	print(f"\n{len(parquets)} archivo(s) subido(s).")
+
+
+################ MAIN
 if __name__ == "__main__":
-    main()
+	upload_raw()
