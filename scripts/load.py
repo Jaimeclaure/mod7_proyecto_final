@@ -40,7 +40,7 @@ def main():
     partition = f"year={today.year}/month={today.month:02d}/day={today.day:02d}"
 
     for name, local_path in files:
-        dest_path = f"bronze/football_data/{partition}/{name}.csv"
+        dest_path = f"bronze/football_data/{name}/{partition}/{name}.parquet"
         upload_to_gcs(bucket_name, local_path, dest_path)
         
     logger.info("Pipeline de ingesta finalizado con éxito.")

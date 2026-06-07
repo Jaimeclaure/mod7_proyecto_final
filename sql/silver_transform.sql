@@ -1,8 +1,26 @@
 -- silver_transform.sql
 -- Objetivo: Limpiar datos y cargar de forma incremental (evitando duplicados)
 
+-- 0. Asegurar que la tabla externa lea Parquet y soporte particionado Hive
+CREATE OR REPLACE EXTERNAL TABLE `mci506-futbol-europeo.liga_bonze.tbl_matches`
+WITH PARTITION COLUMNS (year STRING, month STRING, day STRING)
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://mci506-futbol-europeo-bronze/bronze/football_data/matches/*'],
+  hive_partition_uri_prefix = 'gs://mci506-futbol-europeo-bronze/bronze/football_data/matches'
+);
+
+-- 0.1 Asegurar que la tabla externa de posiciones (standings) lea Parquet y soporte particionado Hive
+CREATE OR REPLACE EXTERNAL TABLE `mci506-futbol-europeo.liga_bonze.tbl_standings`
+WITH PARTITION COLUMNS (year STRING, month STRING, day STRING)
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://mci506-futbol-europeo-bronze/bronze/football_data/standings/*'],
+  hive_partition_uri_prefix = 'gs://mci506-futbol-europeo-bronze/bronze/football_data/standings'
+);
+
 -- 1. Crear la tabla nativa
-CREATE TABLE IF NOT EXISTS `mod7-proyecto-liga.mod7_proyecto_liga.silver_matches` (
+CREATE TABLE IF NOT EXISTS `mci506-futbol-europeo.liga_silver.silver_matches` (
     match_id STRING,
     liga STRING,
     fecha DATE,
@@ -15,7 +33,7 @@ CREATE TABLE IF NOT EXISTS `mod7-proyecto-liga.mod7_proyecto_liga.silver_matches
 );
 
 -- 2. Lógica Incremental usando WHERE NOT EXISTS y validaciones de calidad de datos
-INSERT INTO `mod7-proyecto-liga.mod7_proyecto_liga.silver_matches`
+INSERT INTO `mci506-futbol-europeo.liga_silver.silver_matches`
 SELECT 
     CAST(match_id AS STRING) as match_id,
     liga,
@@ -26,11 +44,11 @@ SELECT
     CAST(goles_local AS INT64) as home_goals,
     CAST(goles_visitante AS INT64) as away_goals,
     ganador
-FROM `mod7-proyecto-liga.mod7_proyecto_liga.ext_matches` AS ext
+FROM `mci506-futbol-europeo.liga_bonze.tbl_matches` AS ext
 WHERE NOT EXISTS (
     SELECT 1 
-    FROM `mod7-proyecto-liga.mod7_proyecto_liga.silver_matches` AS sil
-    WHERE sil.match_id = CAST(ext.MatchID AS STRING)
+    FROM `mci506-futbol-europeo.liga_silver.silver_matches` AS sil
+    WHERE sil.match_id = CAST(ext.match_id AS STRING)
 )
 -- Reglas de validación de calidad de datos (NICE-TO-HAVE)
 AND ext.equipo_local IS NOT NULL

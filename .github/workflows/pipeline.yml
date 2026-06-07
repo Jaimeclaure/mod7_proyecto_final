@@ -22,6 +22,9 @@ jobs:
         workload_identity_provider: 'projects/1084996365203/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
         service_account: 'github-pipeline-sa@mci506-futbol-europeo.iam.gserviceaccount.com'
 
+    - name: Configurar Google Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
     - name: Configurar Python
       uses: actions/setup-python@v5
       with:
@@ -41,9 +44,16 @@ jobs:
         # Ejecutar el orquestador
         python scripts/load.py
 
+    - name: Transformar y Agregar en BigQuery (Silver & Gold)
+      run: |
+        echo "Ejecutando transformaciones Silver..."
+        bq query --use_legacy_sql=false --project_id=mci506-futbol-europeo < sql/silver_transform.sql
+        echo "Ejecutando agregaciones Gold..."
+        bq query --use_legacy_sql=false --project_id=mci506-futbol-europeo < sql/gold_agreggations.sql
+
     - name: Notificar éxito
       if: success()
-      run: echo "✅ Pipeline ejecutado correctamente. Los datos se han cargado en la capa Bronze."
+      run: echo "✅ Pipeline ejecutado correctamente. Los datos están listos en las capas Bronze, Silver y Gold."
 
     - name: Notificar fallo
       if: failure()

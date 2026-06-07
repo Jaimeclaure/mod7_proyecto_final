@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 Módulo de extracción. Consume la API de football-data.org
 y descarga los datos de Partidos y Posiciones a un directorio temporal.
@@ -65,8 +64,8 @@ def extract_datasets(temp_dir: str = "football_data") -> List[Tuple[str, str]]:
         df_matches.columns = ['match_id', 'liga', 'fecha', 'estado', 'equipo_local', 'equipo_visitante', 'goles_local', 'goles_visitante', 'ganador']
         df_matches['fecha'] = df_matches['fecha'].str[:10] # Solo fecha
         
-        local_path = os.path.join(temp_dir, "matches.csv")
-        df_matches.to_csv(local_path, index=False)
+        local_path = os.path.join(temp_dir, "matches.parquet")
+        df_matches.to_parquet(local_path, index=False)
         extracted_files.append(("matches", local_path))
 
     # 2. Extracción de Posiciones (Standings)
@@ -96,21 +95,8 @@ def extract_datasets(temp_dir: str = "football_data") -> List[Tuple[str, str]]:
         df_standings = df_standings[[col for col in columnas_standings if col in df_standings.columns]].copy()
         
         df_standings.columns = ['liga', 'posicion', 'equipo', 'partidos_jugados', 'victorias', 'empates', 'derrotas', 'puntos', 'goles_favor', 'goles_contra', 'diferencia_goles']
-        local_path = os.path.join(temp_dir, "standings.csv")
-        df_standings.to_csv(local_path, index=False)
+        local_path = os.path.join(temp_dir, "standings.parquet")
+        df_standings.to_parquet(local_path, index=False)
         extracted_files.append(("standings", local_path))
             
     return extracted_files
-=======
-"""Script de extracción (placeholder)."""
-
-from utils import load_parquet
-
-
-def main():
-    print("Ejecutando script de extracción (placeholder)")
-
-
-if __name__ == "__main__":
-    main()
->>>>>>> 9563ef5d4010832a348e063804599ba667dbf4d3
