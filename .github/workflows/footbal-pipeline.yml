@@ -4,7 +4,7 @@ name: Football Data Pipeline
 on:
   push:
     branches:
-      - rama_gsgs  # Se ejecuta cuando subes cambios a tu rama
+      - '**'
   schedule:
     - cron: '0 18 * * *'  # Se ejecuta todos los días a las 18:00 UTC (ajusta según tu zona horaria)
 
