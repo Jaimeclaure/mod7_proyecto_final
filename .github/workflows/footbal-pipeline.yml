@@ -32,26 +32,15 @@ jobs:
     # 4. Ejecutar la Extracción de Datos
     - name: Run Extract Script
       env:
-<<<<<<< Updated upstream
         # Mapeamos tu API Key para que el extractor de partidos y jugadores funcione
-=======
-        # Mapeamos la API Key para que el extractor de partidos y jugadores
->>>>>>> Stashed changes
         FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
       run: |
         python -m scripts.extract
 
-<<<<<<< Updated upstream
     # 5. Ejecutar la Carga a Google Cloud Storage
     - name: Run Load Script
       env:
         # ¡CRÍTICO! Aquí inyectamos absolutamente TODO lo que utils.py y load.py necesitan
-=======
-    # 5. Se ejecuta la carga a Google Cloud Storage
-    - name: Run Load Script
-      env:
-        # inyecccion de llaves que utils.py y load.py necesitan
->>>>>>> Stashed changes
         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         RAW_PREFIX: ${{ secrets.RAW_PREFIX }}
