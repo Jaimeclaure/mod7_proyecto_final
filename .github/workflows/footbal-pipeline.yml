@@ -21,7 +21,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.11' # Versión estable de tu entorno
+        python-version: '3.11' # es la versión mas estable
 
     # 3. Instalar las dependencias del proyecto utilizando tu requirements.txt
     - name: Install dependencies
@@ -32,15 +32,15 @@ jobs:
     # 4. Ejecutar la Extracción de Datos
     - name: Run Extract Script
       env:
-        # Mapeamos tu API Key para que el extractor de partidos y jugadores funcione
+        # Mapeamos la API Key para que el extractor de partidos y jugadores
         FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
       run: |
         python -m scripts.extract
 
-    # 5. Ejecutar la Carga a Google Cloud Storage
+    # 5. Se ejecuta la carga a Google Cloud Storage
     - name: Run Load Script
       env:
-        # ¡CRÍTICO! Aquí inyectamos absolutamente TODO lo que utils.py y load.py necesitan
+        # inyecccion de llaves que utils.py y load.py necesitan
         GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
         GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
         RAW_PREFIX: ${{ secrets.RAW_PREFIX }}
