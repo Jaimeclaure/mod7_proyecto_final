@@ -4,6 +4,16 @@ Este proyecto implementa un pipeline de datos ETL/ELT automatizado que extrae in
 
 ---
 
+## 👥 Integrantes del Grupo
+
+El desarrollo, arquitectura e implementación de este pipeline de datos fue realizado por:
+
+* 🧑‍💻 **Jaime Claure Alvarez**
+* 👩‍💻 **Lorena Fabiola Sanchez Angulo**
+* 🧑‍💻 **Guery Sanz Guerrero Selaez**
+
+---
+
 ## Estructura del Proyecto
 
 El repositorio mantiene una arquitectura modular que separa la lógica de extracción, utilitarios de configuración y los flujos de carga automatizados:
