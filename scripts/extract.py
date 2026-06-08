@@ -35,13 +35,17 @@ from utils import slug, to_parquet
 
 ################ CONFIGURACIÓN BASE
 
-# Se carga el archivo .env desde la raíz del proyecto.
+# Carga variables desde .env si existe.
+# En GitHub Actions la variable viene desde Secrets, no desde archivo .env.
 load_dotenv(ROOT / ".env")
 
 API_KEY = os.getenv("FOOTBALL_DATA_API_KEY")
 
 if not API_KEY:
-	raise ValueError("No se encontró FOOTBALL_DATA_API_KEY en el archivo .env")
+	raise ValueError(
+		"No se encontró la variable FOOTBALL_DATA_API_KEY. "
+		"Verifica que exista en el archivo .env local o en GitHub Secrets."
+	)
 
 BASE_URL = "https://api.football-data.org/v4/competitions"
 

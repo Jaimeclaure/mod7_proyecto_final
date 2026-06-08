@@ -1,0 +1,25 @@
+.env
+.env.*
+
+# Entornos e intermedios de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Archivos de datos locales (seguridad)
+data/
+*.parquet
+*.csv
+*.json
+
+# Evita subir reportes locales pesados o temporales
+*.html
+
+# Archivos de checkpoints de Jupyter
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/

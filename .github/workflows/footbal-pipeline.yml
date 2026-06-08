@@ -1,0 +1,59 @@
+name: Football Data Pipeline
+
+# encedemos el pipeline
+on:
+  push:
+    branches:
+      - '**'
+  schedule:
+    - cron: '0 18 * * *'  # Se ejecuta todos los días a las 18:00 UTC (14:00 hora de Bolivia)
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1. Descargar el código del repositorio en la máquina virtual de GitHub
+    - name: Checkout repository code
+      uses: actions/checkout@v4
+
+    # 2. Configurar la versión de Python
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11' # Versión estable de tu entorno
+
+    # 3. Instalar las dependencias del proyecto utilizando tu requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # 4. Ejecutar la Extracción de Datos
+    - name: Run Extract Script
+      env:
+<<<<<<< Updated upstream
+        # Mapeamos tu API Key para que el extractor de partidos y jugadores funcione
+=======
+        # Mapeamos la API Key para que el extractor de partidos y jugadores
+>>>>>>> Stashed changes
+        FOOTBALL_DATA_API_KEY: ${{ secrets.FOOTBALL_DATA_API_KEY }}
+      run: |
+        python -m scripts.extract
+
+<<<<<<< Updated upstream
+    # 5. Ejecutar la Carga a Google Cloud Storage
+    - name: Run Load Script
+      env:
+        # ¡CRÍTICO! Aquí inyectamos absolutamente TODO lo que utils.py y load.py necesitan
+=======
+    # 5. Se ejecuta la carga a Google Cloud Storage
+    - name: Run Load Script
+      env:
+        # inyecccion de llaves que utils.py y load.py necesitan
+>>>>>>> Stashed changes
+        GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        GCS_BUCKET: ${{ secrets.GCS_BUCKET }}
+        RAW_PREFIX: ${{ secrets.RAW_PREFIX }}
+      run: |
+        python -m scripts.load
